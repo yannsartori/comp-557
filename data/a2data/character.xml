@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!-- Yann Sartori 260822776 -->
+<!-- hierachrical definition of a character -->
+<doc>
+	<node type="freejoint" name="root" position="-0.5 1 -0.5" rotation="0 -135 0" scale="0.75 0.75 0.75">
+		<node type="spherical" name="neck joint" position="0 1 0" min="-30 -80 -15" max="30 80 15">
+			<geom type="cube" name="neck" position="0 0 0" scale="0.25 0.4 0.25" colour="0.550 0.251 0.055"/>
+			<geom type="sphere" name="melon" position="0 1.25 0" scale="0.3 0.4 0.35" colour="0.600 0.275 0.059"/>
+			<geom type="sphere" name="r eye" position="-3 10 7" scale="0.05 0.05 0.05"/>
+			<geom type="sphere" name="r pupil" position="-6 20 16" scale="0.025 0.025 0.025" colour="0 0 0"/>
+			<geom type="sphere" name="l eye" position="3 10 7" scale="0.05 0.05 0.05"/>
+			<geom type="sphere" name="l pupil" position="6 20 16" scale="0.025 0.025 0.025" colour="0 0 0"/>
+			<geom type="sphere" name="schnozz" position="0 4 7" scale="0.05 0.1 0.05" colour="0.550 0.251 0.055"/>
+			<!-- animated eyebrows lol-->
+			<node type="rotary" name="r eyebrow tilt" position="-0.15 0.6 0.35" rotation-axis="0 0 -1" min-max-angle="5 0 20">
+				<geom type="cube" name="r eyebrow" position="0.1 0 0" scale="0.15 0.05 0.05" colour="0.396 0.263 0.129"/>
+			</node>
+			<node type="rotary" name="l eyebrow tilt" position="0.15 0.6 0.35" rotation-axis="0 0 1" min-max-angle="5 0 20">
+				<geom type="cube" name="l eyebrow" position="0.1 0 0" scale="0.15 0.05 0.05" colour="0.396 0.263 0.129"/>
+			</node>
+			<!-- he can smile and get mad-->
+			<node type="rotary" name="r mouth muscle" position="0 0.25 0.3" rotation-axis="0 0 1" min-max-angle="-7 -30 30">
+				<geom type="cube" name="r mouth" position="-0.5 0 0" scale="0.13 0.025 0.025" colour="0.640 0.388 0.357"/>
+				<node type="rotary" name="l mouth muscle" position="0 0 0" rotation-axis="0 0 1" min-max-angle="22 -30 30">
+					<geom type="cube" name="l mouth" position="0.5 0 0" scale="0.13 0.025 0.025" colour="0.640 0.388 0.357"/>
+				</node>
+			</node>
+		</node>
+		<geom type="cube" name="torso" position="0 0.5 0" scale="1 1 0.5" colour="0.467 0.867 0.467"/>
+		<node type="spherical" name="r shoulder" position="-0.5 1 0" min="-180 -90 -180" max="180 90 0">
+			<!-- My guy's been going to the gym-->
+			<geom type="cube" name="upper r arm" position="-0.5 -0.5 0" scale="0.25 0.6 0.25" colour="0.467 0.867 0.467"/>
+			<node type="rotary" name="r elbow" position="0 -0.5 0" min-max-angle="45 0 135" rotation-axis="-1 0 0">
+				<geom type="cube" name="lower r arm" position="-0.65 -0.6 0" scale="0.2 0.6 0.2" colour="0.550 0.251 0.055"/>
+			</node>
+		</node>
+		<node type="spherical" name="l shoulder" position="0.5 1 0" min="-180 -90 0" max="180 90 180">
+			<geom type="cube" name="upper l arm" position="0.5 -0.5 0" scale="0.25 0.6 0.25" colour="0.467 0.867 0.467"/>
+			<node type="rotary" name="l elbow" position="0 -0.5 0" min-max-angle="45 0 135" rotation-axis="-1 0 0">
+				<geom type="cube" name="lower l arm" position="0.65 -0.6 0" scale="0.2 0.6 0.2" colour="0.550 0.251 0.055"/>
+			</node>
+		</node>
+		<node type="spherical" name="r hip" position="-0.25 -0.35 0" min="-60 -45 -15" max="60 45 10">
+			<geom type="cube" name="upper r leg" position="0 0 0" scale="0.4 0.8 0.4" colour="0.082 0.376 0.741"/>
+			<node type="rotary" name="r knee" position="0 -0.5 0" min-max-angle="-5 -90 0" rotation-axis="-1 0 0">
+				<geom type="cube" name="lower r leg" position="0 -0.25 -0.1" scale="0.35 0.6 0.35" colour="0.082 0.376 0.741"/>
+				<node type="rotary" name="r ankle" position="0 -0.5 0" min-max-angle="0 -15 25" rotation-axis="-1 0 0">
+					<geom type="cube" name="r foot" position="0 1 0.25" scale="0.25 0.05 0.5" colour="0 0 0"/>
+				</node>
+			</node>
+		</node>
+		<node type="spherical" name="l hip" position="0.25 -0.35 0" min="-60 -45 -10" max="60 45 15">
+			<geom type="cube" name="upper l leg" position="0 0 0" scale="0.4 0.8 0.4" colour="0.082 0.376 0.741"/>
+			<node type="rotary" name="l knee" position="0 -0.5 0" min-max-angle="-5 -90 0" rotation-axis="-1 0 0">
+				<geom type="cube" name="lower l leg" position="0 -0.25 -0.1" scale="0.35 0.6 0.35" colour="0.082 0.376 0.741"/>
+				<node type="rotary" name="l ankle" position="0 -0.5 0" min-max-angle="0 -15 25" rotation-axis="-1 0 0">
+					<geom type="cube" name="l foot" position="0 1 0.25" scale="0.25 0.05 0.5" colour="0 0 0"/>
+				</node>
+			</node>
+		</node>
+	</node>
+</doc>
