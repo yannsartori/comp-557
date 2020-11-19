@@ -62,10 +62,10 @@ public class Scene {
         		offset[i*xDivisions + j][1] = -0.5 + step*(j + 0.5) + jitter * step * (Math.random() - 0.5);
         	}
         }
-//        for ( int j = 0; j < h && !render.isDone(); j++ ) {
-//            for ( int i = 0; i < w && !render.isDone(); i++ ) {
-        for ( int j = h - 1; j >= 0 && !render.isDone(); j-- ) {
-            for ( int i = w - 1; i >= 0 && !render.isDone(); i-- ) {
+        for ( int j = 0; j < h && !render.isDone(); j++ ) {
+            for ( int i = 0; i < w && !render.isDone(); i++ ) {
+//        for ( int j = h - 1; j >= 0 && !render.isDone(); j-- ) {
+//            for ( int i = w - 1; i >= 0 && !render.isDone(); i-- ) {
             	Color4f total = new Color4f();
             	for ( int sample = 0; sample < offset.length; sample++ ) {
 	                // TODO: Objective 1: generate a ray (use the generateRay method)
