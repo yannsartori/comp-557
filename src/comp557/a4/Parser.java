@@ -1,5 +1,7 @@
 package comp557.a4;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -108,9 +110,15 @@ public class Parser {
 	            } else if ( nodeName.equalsIgnoreCase( "metaballs")) {
 	            	Metaballs metaballs = Parser.createMetaballs( n );
 	            	sceneNode.children.add( metaballs );
+	            } else if ( nodeName.equalsIgnoreCase( "quadric" ) ) {
+                	Quadric quadric = Parser.createQuadric(n);
+                	sceneNode.children.add( quadric );
 	            } else if ( nodeName.equalsIgnoreCase( "mesh" ) ) {
 	            	Mesh mesh = Parser.createMesh(n);
 	            	sceneNode.children.add( mesh );
+	            } else if ( nodeName.equalsIgnoreCase("compositegeom") ) {
+	            	CompositeGeom geom = Parser.createCompositeGeom(n);
+	            	sceneNode.children.add( geom );
 	            }
 	        }	        
             if ( !SceneNode.nodeMap.containsKey(sceneNode.name) ) {
@@ -168,6 +176,52 @@ public class Parser {
 		return sceneNode;	
 	}
 	
+	private static CompositeGeom createCompositeGeom(Node dataNode) {
+		CompositeGeom geom = new CompositeGeom();
+		String operation = dataNode.getAttributes().getNamedItem("operation").getNodeValue();
+		if ( operation.equalsIgnoreCase("union") ) geom.operation = CompositeGeom.Operation.UNION;
+		else if ( operation.equalsIgnoreCase("intersection") ) geom.operation = CompositeGeom.Operation.INTERSECTION;
+		else if ( operation.equalsIgnoreCase("difference") ) geom.operation = CompositeGeom.Operation.DIFFERENCE;
+		
+		NodeList nodeList = dataNode.getChildNodes();
+		List<Intersectable> children = new LinkedList<>();
+		for ( int i = 0; i < nodeList.getLength(); i++ ) {
+            Node n = nodeList.item(i);
+            // skip all text, just process the ELEMENT_NODEs
+            if ( n.getNodeType() != Node.ELEMENT_NODE ) continue;
+            String nodeName = n.getNodeName();
+        	if ( nodeName.compareToIgnoreCase( "node") == 0 ) {
+                SceneNode childNode = Parser.createSceneNode(n) ;
+                children.add( childNode );
+            } else if ( nodeName.equalsIgnoreCase( "plane" ) ) {
+        		Plane plane = Parser.createPlane(n);
+        		children.add( plane );
+            } else if ( nodeName.equalsIgnoreCase( "box" ) ) {
+        		Box box = Parser.createBox(n);
+        		children.add( box );
+            } else if ( nodeName.equalsIgnoreCase( "sphere" ) ) {
+        		Sphere sphere = Parser.createSphere(n);
+        		children.add( sphere );
+            } else if ( nodeName.equalsIgnoreCase( "metaballs")) {
+            	Metaballs metaballs = Parser.createMetaballs( n );
+            	children.add( metaballs );
+            } else if ( nodeName.equalsIgnoreCase( "quadric" ) ) {
+            	Quadric quadric = Parser.createQuadric(n);
+            	children.add( quadric );
+            } else if ( nodeName.equalsIgnoreCase( "mesh" ) ) {
+            	Mesh mesh = Parser.createMesh(n);
+            	children.add( mesh );
+            } else if ( nodeName.equalsIgnoreCase("compositegeom") ) {
+            	CompositeGeom cGeom = Parser.createCompositeGeom(n);
+            	children.add( cGeom );
+            }
+        }
+		geom.leftChild = children.get(0);
+		geom.rightChild = children.get(1);
+		
+		return geom;
+	}
+
 	/**
 	 * Create a light.
 	 */
@@ -345,7 +399,8 @@ public class Parser {
 	 * Create a plane.
 	 */
 	public static Plane createPlane( Node dataNode ) {
-		Plane plane = new Plane();	
+		Plane plane = new Plane();
+		Node planeNorm = dataNode.getAttributes().getNamedItem("n");
 		plane.material = parseMaterial(dataNode, "material");	
 		plane.material2 = parseMaterial(dataNode, "material2");
 		return plane;

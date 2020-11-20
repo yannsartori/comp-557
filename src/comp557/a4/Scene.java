@@ -210,6 +210,7 @@ public class Scene {
 	public static boolean inShadow(final IntersectResult result, final Light light, final Intersectable root, IntersectResult shadowResult, Ray shadowRay) {
 		
 		// TODO: Objective 5: check for shdows and use it in your lighting computation
+		//if ( true ) return false;
 		shadowRay.viewDirection.sub(light.from, result.p);
 		shadowRay.viewDirection.normalize();
 		sigmaRay.scaleAdd(0.005, shadowRay.viewDirection, result.p);
