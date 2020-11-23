@@ -47,10 +47,10 @@ public class Scene {
         int w = cam.imageSize.width;
         int h = cam.imageSize.height;
         Ray ray = new Ray();
-        Ray shadowRay = new Ray();
-        IntersectResult result = new IntersectResult();
-        IntersectResult shadowResult = new IntersectResult();
-        
+        Color4f total = new Color4f();
+    	Color4f c = new Color4f();
+    	Color4f specular = new Color4f();
+    	
         render.init(w, h, showPanel);
         int xDivisions = (int) Math.ceil(Math.sqrt(render.samples));
         double[][] offset = new double[xDivisions * xDivisions][2];
@@ -62,79 +62,26 @@ public class Scene {
         		offset[i*xDivisions + j][1] = -0.5 + step*(j + 0.5) + jitter * step * (Math.random() - 0.5);
         	}
         }
-        for ( int j = 0; j < h && !render.isDone(); j++ ) {
-            for ( int i = 0; i < w && !render.isDone(); i++ ) {
-//        for ( int j = h - 1; j >= 0 && !render.isDone(); j-- ) {
-//            for ( int i = w - 1; i >= 0 && !render.isDone(); i-- ) {
-            	Color4f total = new Color4f();
+//        for ( int j = 0; j < h && !render.isDone(); j++ ) {
+//            for ( int i = 0; i < w && !render.isDone(); i++ ) {
+        for ( int j = h - 1; j >= 0 && !render.isDone(); j-- ) {
+            for ( int i = w - 1; i >= 0 && !render.isDone(); i-- ) {
+            	total.set(0, 0, 0, 0);
             	for ( int sample = 0; sample < offset.length; sample++ ) {
 	                // TODO: Objective 1: generate a ray (use the generateRay method)
 	            	Scene.generateRay(i, j, offset[sample], cam, ray);
-	                // TODO: Objective 2: test for intersection with scene surfaces
-	            	for ( Intersectable surface : surfaceList ) {
-	            		surface.intersect(ray, result);
-	            	}
-	            	
-	                // TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
-	            	Color4f c = new Color4f();
-	                Vector3d lightDirection = new Vector3d();
-	                Vector3d halfVector = new Vector3d();
-	                Vector4f temp = new Vector4f();
-	                boolean checkNextLight = false;
-	            	if ( Double.isFinite(result.t) ){
-	        			for ( Light l : lights.values() ) {
-	        				lightDirection.sub(l.from, result.p);
-	        				lightDirection.normalize();
-	        				
-	        				// Shadow Ray
-	        				checkNextLight = false;
-	        				shadowResult.t = Double.POSITIVE_INFINITY;
-	        				for (Intersectable surface : surfaceList ) {
-	        					if ( inShadow(result, l, surface, shadowResult, shadowRay) ) {
-	        						checkNextLight = true;
-	        						break;
-	        					}
-	        				}
-	        				
-	        				if ( checkNextLight ) continue;
-	        				
-	        				// Lambertian
-	        				temp.set(l.color.x, l.color.y, l.color.z, l.color.w);
-	        				temp.scale((float) (Math.max(0, result.n.dot(lightDirection)) * l.power));
-	        				temp.x *= result.material.diffuse.x;
-	        				temp.y *= result.material.diffuse.y;
-	        				temp.z *= result.material.diffuse.z;
-	        				temp.w *= result.material.diffuse.w;
-	        				c.add(temp);
-	        				
-	        				//Blinn phong
-	        				halfVector.scaleAdd(-1, ray.viewDirection, lightDirection);
-	        				halfVector.normalize();
-	        				temp.set(l.color.x, l.color.y, l.color.z, l.color.w);
-	        				temp.scale((float) (Math.pow(Math.max(0, result.n.dot(halfVector)), result.material.shinyness) * l.power));
-	        				temp.x *= result.material.specular.x;
-	        				temp.y *= result.material.specular.y;
-	        				temp.z *= result.material.specular.z;
-	        				temp.w *= result.material.specular.w;
-	        				c.add(temp);
-	        			}
-	        		}
-	            	if ( c.x == c.y && c.y == c.z && c.z == 0 ) {
-	            		c.x = render.bgcolor.x;
-	            		c.y = render.bgcolor.y;
-	            		c.z = render.bgcolor.z;
-	            	}
-	            	//Ambient
-	            	c.x += ambient.x;
-	            	c.y += ambient.y;
-	            	c.z += ambient.z;
-	            	c.w = 1;
-	            	
+	            	c.set(0, 0, 0, 0);
+	            	specular.set(1, 1, 1, 1);
+	            	calculateRayColor(ray, c, specular);
 	            	total.add(c);
-	                result.t = Double.POSITIVE_INFINITY;
 	            }
             	// Here is an example of how to calculate the pixel value.
             	total.scale((float) (1.0 / offset.length));
+            	//Ambient
+            	total.x += ambient.x;
+            	total.y += ambient.y;
+            	total.z += ambient.z;
+            	total.w = 1;
             	total.clamp(0, 1);
             	int r = (int)(255*total.x);
                 int g = (int)(255*total.y);
@@ -194,6 +141,99 @@ public class Scene {
 		
 	}
 
+    private Vector3d lightDirection = new Vector3d();
+    private Vector3d halfVector = new Vector3d();
+    private Vector3d reflectionVector = new Vector3d();
+    private Vector4f temp = new Vector4f();
+    private Ray shadowRay = new Ray();
+    private IntersectResult shadowResult = new IntersectResult();
+    private IntersectResult result = new IntersectResult();
+	private void calculateRayColor(Ray ray, Color4f c, Color4f specular) {
+        // TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
+    	lightDirection.set(0, 0, 0);
+        halfVector.set(0, 0, 0);
+        reflectionVector.set(0, 0, 0);
+        temp.set(0, 0, 0, 0);
+     // TODO: Objective 2: test for intersection with scene surfaces
+    	for ( Intersectable surface : surfaceList ) {
+    		surface.intersect(ray, result);
+    	}
+        boolean checkNextLight = false;
+    	if ( Double.isFinite(result.t) ) {
+    		result.t = Double.POSITIVE_INFINITY;
+			for ( Light l : lights.values() ) {
+				lightDirection.sub(l.from, result.p);
+				lightDirection.normalize();
+				
+				// Shadow Ray
+				checkNextLight = false;
+				shadowResult.t = Double.POSITIVE_INFINITY;
+				for (Intersectable surface : surfaceList ) {
+					if ( inShadow(result, l, surface, shadowResult, shadowRay) ) {
+						checkNextLight = true;
+						break;
+					}
+				}
+				
+				if ( checkNextLight ) continue;
+				
+				// Lambertian
+				temp.set(l.color.x, l.color.y, l.color.z, l.color.w);
+				temp.scale((float) (Math.max(0, result.n.dot(lightDirection)) * l.power));
+				try {
+					temp.x *= specular.x * result.material.diffuse.x;
+					temp.y *= specular.y * result.material.diffuse.y;
+					temp.z *= specular.z * result.material.diffuse.z;
+					temp.w *= specular.w * result.material.diffuse.w;
+				} catch (Exception e){
+					System.out.println("Wow!");
+					throw e;
+				}
+				c.add(temp);
+				
+				//Blinn phong
+				if ( !result.material.shiny ) {
+    				halfVector.scaleAdd(-1, ray.viewDirection, lightDirection);
+    				halfVector.normalize();
+    				temp.set(l.color.x, l.color.y, l.color.z, l.color.w);
+    				temp.scale((float) (Math.pow(Math.max(0, result.n.dot(halfVector)), result.material.shinyness) * l.power));
+    				temp.x *= specular.x * result.material.specular.x;
+    				temp.y *= specular.y * result.material.specular.y;
+    				temp.z *= specular.z * result.material.specular.z;
+    				temp.w *= specular.w * result.material.specular.w;
+    				c.add(temp);
+				} else {
+//					//Glossy reflection
+					reflectionVector.scaleAdd(-2 * result.n.dot(ray.viewDirection), result.n, ray.viewDirection);
+					reflectionVector.normalize();
+					IntersectResult oldResult = new IntersectResult();
+					oldResult.n.set(result.n);
+					oldResult.p.set(result.p);
+					oldResult.material = result.material;
+					Ray oldRay = new Ray();
+					oldRay.set(ray.eyePoint, ray.viewDirection);
+					result.p.scaleAdd(0.005, result.n, result.p);
+					ray.eyePoint.set(result.p);
+					ray.viewDirection.set(reflectionVector);
+					specular.set(result.material.specular);
+					calculateRayColor(ray, c, specular);
+					ray.set(oldRay.eyePoint, oldRay.viewDirection);
+					result.n.set(oldResult.n);
+					result.p.set(oldResult.p);
+					result.material = oldResult.material;
+					
+				}
+			}
+		}
+    	if ( c.x == c.y && c.y == c.z && c.z == 0 ) {
+    		c.x = render.bgcolor.x;
+    		c.y = render.bgcolor.y;
+    		c.z = render.bgcolor.z;
+    	}
+    	
+        
+	}
+	
 	/**
 	 * Shoot a shadow ray in the scene and get the result.
 	 * 

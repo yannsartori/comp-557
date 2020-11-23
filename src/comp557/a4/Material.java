@@ -26,6 +26,8 @@ public class Material {
     /** Specular hardness, or exponent, default to a reasonable value */ 
     public float shinyness = 64;
  
+    /** For "realistic" shininess */
+    public boolean shiny = false;
     /**
      * Default constructor
      */

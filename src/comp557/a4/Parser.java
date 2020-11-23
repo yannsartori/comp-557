@@ -348,6 +348,8 @@ public class Parser {
 	    	if ( hardnessAttr != null ) {
 	    		material.shinyness = Float.parseFloat( hardnessAttr.getNodeValue() );
 	    	}
+	    	Node shinyAttr = dataNode.getAttributes().getNamedItem("shiny");
+	    	material.shiny = shinyAttr != null;
 		}
 		return material;
 	}
