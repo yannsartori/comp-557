@@ -20,9 +20,6 @@ public class Light {
     
     /** Type of light, default is a point light */
     public String type = "point";
-
-    /** Number of samples for softer shadows */
-    public float numSamples = 1;
     
     /** Number of samples for softer shadows */
     public float shadowSamples = 1;

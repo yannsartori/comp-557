@@ -255,10 +255,6 @@ public class Parser {
         if ( typeAttr != null ) {
         	light.type = typeAttr.getNodeValue();
         }    
-        Node numSampleAttr = dataNode.getAttributes().getNamedItem("num-samples");
-        if ( numSampleAttr != null ) {
-        	light.numSamples = Float.parseFloat(numSampleAttr.getNodeValue());
-        } 
         Node shadowSampleAttr = dataNode.getAttributes().getNamedItem("shadow-samples");
         if ( shadowSampleAttr != null ) {
         	light.shadowSamples = Float.parseFloat(shadowSampleAttr.getNodeValue());
