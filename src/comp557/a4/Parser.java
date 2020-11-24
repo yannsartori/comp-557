@@ -254,7 +254,28 @@ public class Parser {
         Node typeAttr = dataNode.getAttributes().getNamedItem("type");
         if ( typeAttr != null ) {
         	light.type = typeAttr.getNodeValue();
-        }        
+        }    
+        Node numSampleAttr = dataNode.getAttributes().getNamedItem("num-samples");
+        if ( numSampleAttr != null ) {
+        	light.numSamples = Float.parseFloat(numSampleAttr.getNodeValue());
+        } 
+        Node shadowSampleAttr = dataNode.getAttributes().getNamedItem("shadow-samples");
+        if ( shadowSampleAttr != null ) {
+        	light.shadowSamples = Float.parseFloat(shadowSampleAttr.getNodeValue());
+        } 
+        Node radiusAttr = dataNode.getAttributes().getNamedItem("radius");
+        if ( radiusAttr != null ) {
+        	light.radius = Double.parseDouble(radiusAttr.getNodeValue());
+        } 
+        Node normalAttr = dataNode.getAttributes().getNamedItem("normal");
+        if ( normalAttr != null ) {
+        	Scanner s = new Scanner( normalAttr.getNodeValue());
+            double x = s.nextDouble();
+            double y = s.nextDouble();
+            double z = s.nextDouble();
+            light.n.set(x,y,z); 
+            s.close();
+        } 
 		return light;
 	}
 	

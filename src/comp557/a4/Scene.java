@@ -154,41 +154,39 @@ public class Scene {
         halfVector.set(0, 0, 0);
         reflectionVector.set(0, 0, 0);
         temp.set(0, 0, 0, 0);
-     // TODO: Objective 2: test for intersection with scene surfaces
+        int shadowCount = 0;
     	for ( Intersectable surface : surfaceList ) {
     		surface.intersect(ray, result);
     	}
-        boolean checkNextLight = false;
     	if ( Double.isFinite(result.t) ) {
     		result.t = Double.POSITIVE_INFINITY;
 			for ( Light l : lights.values() ) {
+				shadowCount = 0;
 				lightDirection.sub(l.from, result.p);
 				lightDirection.normalize();
-				
 				// Shadow Ray
-				checkNextLight = false;
-				shadowResult.t = Double.POSITIVE_INFINITY;
-				for (Intersectable surface : surfaceList ) {
-					if ( inShadow(result, l, surface, shadowResult, shadowRay) ) {
-						checkNextLight = true;
-						break;
+				for ( int j = 0; j < l.shadowSamples; j++ ) {
+					shadowResult.t = Double.POSITIVE_INFINITY;
+					computeLightDirection(shadowRay.viewDirection, l, result.p);
+					for (Intersectable surface : surfaceList ) {
+						if ( inShadow(result, l, surface, shadowResult, shadowRay) ) {
+							shadowCount++;
+							break;
+						}
 					}
 				}
 				
-				if ( checkNextLight ) continue;
+				// don't need to compute
+				if ( shadowCount == l.shadowSamples ) continue;
 				
 				// Lambertian
 				temp.set(l.color.x, l.color.y, l.color.z, l.color.w);
 				temp.scale((float) (Math.max(0, result.n.dot(lightDirection)) * l.power));
-				try {
-					temp.x *= specular.x * result.material.diffuse.x;
-					temp.y *= specular.y * result.material.diffuse.y;
-					temp.z *= specular.z * result.material.diffuse.z;
-					temp.w *= specular.w * result.material.diffuse.w;
-				} catch (Exception e){
-					System.out.println("Wow!");
-					throw e;
-				}
+				temp.x *= specular.x * result.material.diffuse.x;
+				temp.y *= specular.y * result.material.diffuse.y;
+				temp.z *= specular.z * result.material.diffuse.z;
+				temp.w *= specular.w * result.material.diffuse.w;
+				temp.scale(1 - (shadowCount / l.shadowSamples));
 				c.add(temp);
 				
 				//Blinn phong
@@ -201,11 +199,11 @@ public class Scene {
     				temp.y *= specular.y * result.material.specular.y;
     				temp.z *= specular.z * result.material.specular.z;
     				temp.w *= specular.w * result.material.specular.w;
+    				temp.scale(1 - (shadowCount / l.shadowSamples));
     				c.add(temp);
 				} else {
-//					//Glossy reflection
+					//Glossy reflection
 					reflectionVector.scaleAdd(-2 * result.n.dot(ray.viewDirection), result.n, ray.viewDirection);
-					reflectionVector.normalize();
 					IntersectResult oldResult = new IntersectResult();
 					oldResult.n.set(result.n);
 					oldResult.p.set(result.p);
@@ -215,23 +213,48 @@ public class Scene {
 					result.p.scaleAdd(0.005, result.n, result.p);
 					ray.eyePoint.set(result.p);
 					ray.viewDirection.set(reflectionVector);
-					specular.set(result.material.specular);
+					specular.x *= result.material.specular.x;
+					specular.y *= result.material.specular.y;
+					specular.z *= result.material.specular.z;
+					specular.w *= result.material.specular.w;
 					calculateRayColor(ray, c, specular);
 					ray.set(oldRay.eyePoint, oldRay.viewDirection);
 					result.n.set(oldResult.n);
 					result.p.set(oldResult.p);
 					result.material = oldResult.material;
-					
 				}
 			}
+			
 		}
     	if ( c.x == c.y && c.y == c.z && c.z == 0 ) {
     		c.x = render.bgcolor.x;
     		c.y = render.bgcolor.y;
     		c.z = render.bgcolor.z;
     	}
-    	
         
+	}
+	
+	private static Point3d lightPoint = new Point3d();
+	private static Vector3d tempVec = new Vector3d();
+	private static void computeLightDirection(Vector3d lightDirection, Light l, Point3d intersection) {
+		
+		if ( l.type.equals("point") ) {
+			lightPoint.set(l.from);
+		} else if ( l.type.equals("area") ) {
+			// Random number between -l.radius and l.radius
+			// Generate a point in the sphere of the light
+			double xRad = l.radius * (2*Math.random() - 1); 
+			double yRad = l.radius * (2*Math.random() - 1); 
+			double zRad = l.radius * (2*Math.random() - 1);
+			lightPoint.set(l.from.x + xRad, l.from.y + yRad, l.from.z + zRad);
+			// Project the point onto the light plane defined by the normal and from
+			tempVec.sub(lightPoint, l.from);
+			tempVec.scale(l.n.dot(tempVec), l.n);
+			lightPoint.sub(lightPoint, tempVec);
+			
+		}
+		lightDirection.sub(lightPoint, intersection);
+		lightDirection.normalize();
 	}
 	
 	/**
@@ -251,8 +274,6 @@ public class Scene {
 		
 		// TODO: Objective 5: check for shdows and use it in your lighting computation
 		//if ( true ) return false;
-		shadowRay.viewDirection.sub(light.from, result.p);
-		shadowRay.viewDirection.normalize();
 		sigmaRay.scaleAdd(0.005, shadowRay.viewDirection, result.p);
 		shadowRay.eyePoint.set(sigmaRay);
 		root.intersect(shadowRay, shadowResult);
