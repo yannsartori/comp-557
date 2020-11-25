@@ -419,7 +419,6 @@ public class Parser {
 	 */
 	public static Plane createPlane( Node dataNode ) {
 		Plane plane = new Plane();
-		Node planeNorm = dataNode.getAttributes().getNamedItem("n");
 		plane.material = parseMaterial(dataNode, "material");	
 		plane.material2 = parseMaterial(dataNode, "material2");
 		return plane;
