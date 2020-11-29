@@ -67,8 +67,9 @@ public class SceneNode extends Intersectable {
         	M.transform(tmpResult.p);
         	result.n.set(tmpResult.n);
         	result.n.normalize();
-        	result.p.set(tmpResult.p);
         	result.material = tmpResult.material;
+        	result.p.set(tmpResult.p);
+        	
         	 
         	// TODO: do something useful here!
         

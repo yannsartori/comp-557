@@ -183,11 +183,7 @@ public class Scene {
 				// Lambertian
 				temp.set(l.color.x, l.color.y, l.color.z, l.color.w);
 				temp.scale((float) (Math.max(0, result.n.dot(lightDirection)) * l.power));
-				try {
-					temp.x *= specular.x * result.material.diffuse.x;
-				} catch (Exception e){
-					System.out.println("no bueno");
-				}
+				temp.x *= specular.x * result.material.diffuse.x;
 				temp.y *= specular.y * result.material.diffuse.y;
 				temp.z *= specular.z * result.material.diffuse.z;
 				temp.w *= specular.w * result.material.diffuse.w;
@@ -278,7 +274,7 @@ public class Scene {
 	public static boolean inShadow(final IntersectResult result, final Light light, final Intersectable root, IntersectResult shadowResult, Ray shadowRay) {
 		
 		// TODO: Objective 5: check for shdows and use it in your lighting computation
-		//if ( true ) return false;
+		if ( true ) return false;
 		sigmaRay.scaleAdd(0.005, shadowRay.viewDirection, result.p);
 		shadowRay.eyePoint.set(sigmaRay);
 		root.intersect(shadowRay, shadowResult);

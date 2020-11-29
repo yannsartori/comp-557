@@ -30,6 +30,10 @@ I made it so you could only do an operation on two objects, where if one wanted 
 create a node (A \cap B), and the create another intesection node with this, and C. I supported union, intersection, and set
 difference. To actually perform these operations, I calculated the points of entry and exit (if they existed) for both objects.
 Then, with the interval defined by this entry and exit points, I perform the operation on the intervals. I then take the minimum
-point of the interval, and determine which material to display, and which normal to display.
+point of the interval, and determine which material to display, and which normal to display. One small modification I had to make
+was supporting being inside a box, since I treated all my objects as hollow. To achieve this, I just added a check where if the
+minimum intersection was smaller than the maximum intersection (so it was a valid intersection), the minimum negative, and the
+maximum positive, to set the intersection to the maximum instead of the minimum. This made it possible to have an exit coordinate
+from inside a box (which is needed for the difference operation).
 The image "CompositeGeom.png" demonstrates this (where the image I decided to display is that on this page: 
 https://www.wikiwand.com/en/Constructive_solid_geometry)

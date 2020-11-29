@@ -55,6 +55,10 @@ public class Quadric extends Intersectable {
     	
     	result.t = t;
     	result.p.scaleAdd(result.t, ray.viewDirection, ray.eyePoint);
+    	result.material = material;
+    	if ( material == null) {
+    		System.out.println("material is null");
+    	}
     	
     	tempMat.setZero();
     	tempMat.m00 = result.p.x;
@@ -66,7 +70,7 @@ public class Quadric extends Intersectable {
     	
     	result.n.set(grad);
     	result.n.normalize();
-    	result.material = material;
+    	
     	
 	}
 	

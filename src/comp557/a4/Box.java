@@ -51,7 +51,10 @@ public class Box extends Intersectable {
 		for ( int i = 0; i < 3; i++ ) {
 			normal[i] = 0;
 		}
-		if ( minIntersect < maxIntersect && minIntersect > 0 && minIntersect < result.t ) {
+		if ( minIntersect < maxIntersect && minIntersect < 0 && maxIntersect > 0 ) {
+			minIntersect = maxIntersect;
+		}
+		if ( minIntersect <= maxIntersect && minIntersect > 0 && minIntersect < result.t ) {
 			result.t = minIntersect;
 			result.material = material;
 			result.p.scaleAdd(minIntersect, ray.viewDirection, ray.eyePoint);
