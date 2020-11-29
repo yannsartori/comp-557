@@ -155,6 +155,7 @@ public class Scene {
         reflectionVector.set(0, 0, 0);
         temp.set(0, 0, 0, 0);
         int shadowCount = 0;
+        if ( specular.x < 1e-9 && specular.y < 1e-9 && specular.z < 1e-9 ) return;
     	for ( Intersectable surface : surfaceList ) {
     		surface.intersect(ray, result);
     	}
@@ -182,7 +183,11 @@ public class Scene {
 				// Lambertian
 				temp.set(l.color.x, l.color.y, l.color.z, l.color.w);
 				temp.scale((float) (Math.max(0, result.n.dot(lightDirection)) * l.power));
-				temp.x *= specular.x * result.material.diffuse.x;
+				try {
+					temp.x *= specular.x * result.material.diffuse.x;
+				} catch (Exception e){
+					System.out.println("no bueno");
+				}
 				temp.y *= specular.y * result.material.diffuse.y;
 				temp.z *= specular.z * result.material.diffuse.z;
 				temp.w *= specular.w * result.material.diffuse.w;
