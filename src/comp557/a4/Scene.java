@@ -33,8 +33,18 @@ public class Scene {
     /** 
      * Default constructor.
      */
+    private ArrayList<Ray> rayStack = new ArrayList<Ray>();
+	private ArrayList<IntersectResult> resultStack = new ArrayList<IntersectResult>();
+	private ArrayList<Color4f> specularStack = new ArrayList<Color4f>();
+	private int stackPos;
     public Scene() {
     	this.render = new Render();
+    	for ( int i = 0; i < 5; i++ ) {
+    		rayStack.add(new Ray());
+    		resultStack.add(new IntersectResult());
+    		specularStack.add(new Color4f());
+    	}
+    	stackPos = 0;
     }
     
     /**
@@ -206,25 +216,41 @@ public class Scene {
     				c.add(temp);
 				} else {
 					//Glossy reflection
+					if ( stackPos == rayStack.size() ) return;
 					reflectionVector.scaleAdd(-2 * result.n.dot(ray.viewDirection), result.n, ray.viewDirection);
-					IntersectResult oldResult = new IntersectResult();
+					
+					IntersectResult oldResult = resultStack.get(stackPos);
 					oldResult.n.set(result.n);
 					oldResult.p.set(result.p);
 					oldResult.material = result.material;
-					Ray oldRay = new Ray();
+					
+					Ray oldRay = rayStack.get(stackPos);
 					oldRay.set(ray.eyePoint, ray.viewDirection);
+					
+					specularStack.get(stackPos).set(specular);
+					
+					stackPos++;
+					
 					result.p.scaleAdd(0.005, result.n, result.p);
 					ray.eyePoint.set(result.p);
 					ray.viewDirection.set(reflectionVector);
+					
 					specular.x *= result.material.specular.x;
 					specular.y *= result.material.specular.y;
 					specular.z *= result.material.specular.z;
 					specular.w *= result.material.specular.w;
+					
 					calculateRayColor(ray, c, specular);
+					
+					stackPos--;
+					
 					ray.set(oldRay.eyePoint, oldRay.viewDirection);
+					
 					result.n.set(oldResult.n);
 					result.p.set(oldResult.p);
 					result.material = oldResult.material;
+					
+					specular.set(specularStack.get(stackPos));
 				}
 			}
 			
@@ -236,6 +262,8 @@ public class Scene {
     	}
         
 	}
+	
+	
 	
 	private static Point3d lightPoint = new Point3d();
 	private static Vector3d tempVec = new Vector3d();

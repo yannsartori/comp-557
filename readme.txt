@@ -22,7 +22,9 @@ Blinn Phong reflection (to make the past images look like the Professor's) and f
 factored out my ray colour calculations to a seperate method, and also added a specular field. This specular field initially
 gets set to <1,1,1,1>-- it is meant to be the culmination of mirror reflections to represent the drop-off. Then, I just
 determined the reflection direction, saved my results, culminated the specular, and recursively shot another ray. If my specular
-was too small (or we hit a non-reflective surface), this recursion terminates.
+was too small (or we hit a non-reflective surface), this recursion terminates. Furthermore, I use a preallocated
+stack to reduce on object instantation. As such, another termination condition is if we blow our stack (the default
+size is just 5).
 The image "TwoSpheresPlaneReflective.png" shows this effect on TwoSpheresPlane, but with a shiny floor.
 
 Boolean operations for Constructive Solid Geometry (2): For this, I created a new class called "CompositeGeom". For simplicity,
@@ -36,7 +38,8 @@ minimum intersection was smaller than the maximum intersection (so it was a vali
 maximum positive, to set the intersection to the maximum instead of the minimum. This made it possible to have an exit coordinate
 from inside a box (which is needed for the difference operation).
 The image "CompositeGeom.png" demonstrates this (where the image I decided to display is that on this page: 
-https://www.wikiwand.com/en/Constructive_solid_geometry)
+https://www.wikiwand.com/en/Constructive_solid_geometry) (I disabled shadows in this render because otherwise,
+you can't really see what's going on)
 
 My final image can be found under "Lemons.png". It is a still life of a bowl of lemons, which was inspired the
 previous tenants of my apartment for some reason leaving such a painting. To make the lemon model, I looked up
