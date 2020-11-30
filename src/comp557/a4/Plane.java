@@ -48,4 +48,5 @@ public class Plane extends Intersectable {
 	
 	}
     
+    public void intersect(Ray ray, IntersectResult result, boolean isShadow) { intersect(ray, result); }
 }

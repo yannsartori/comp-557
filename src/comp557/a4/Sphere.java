@@ -58,4 +58,5 @@ public class Sphere extends Intersectable {
     	result.material = material;
     }
     
+    public void intersect(Ray ray, IntersectResult result, boolean isShadow) { intersect(ray, result); }
 }

@@ -14,5 +14,6 @@ public class Metaballs extends Intersectable {
 	public void intersect(Ray ray, IntersectResult result) {
 		
 	}
+	public void intersect(Ray ray, IntersectResult result, boolean isShadow) { intersect(ray, result); }
 }
 

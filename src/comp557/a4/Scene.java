@@ -166,13 +166,15 @@ public class Scene {
 				lightDirection.sub(l.from, result.p);
 				lightDirection.normalize();
 				// Shadow Ray
-				for ( int j = 0; j < l.shadowSamples; j++ ) {
-					shadowResult.t = Double.POSITIVE_INFINITY;
-					computeLightDirection(shadowRay.viewDirection, l, result.p);
-					for (Intersectable surface : surfaceList ) {
-						if ( inShadow(result, l, surface, shadowResult, shadowRay) ) {
-							shadowCount++;
-							break;
+				if ( !render.disableShadows) {
+					for ( int j = 0; j < l.shadowSamples; j++ ) {
+						shadowResult.t = Double.POSITIVE_INFINITY;
+						computeLightDirection(shadowRay.viewDirection, l, result.p);
+						for (Intersectable surface : surfaceList ) {
+							if ( inShadow(result, l, surface, shadowResult, shadowRay) ) {
+								shadowCount++;
+								break;
+							}
 						}
 					}
 				}
@@ -274,10 +276,10 @@ public class Scene {
 	public static boolean inShadow(final IntersectResult result, final Light light, final Intersectable root, IntersectResult shadowResult, Ray shadowRay) {
 		
 		// TODO: Objective 5: check for shdows and use it in your lighting computation
-		if ( true ) return false;
+//		if ( true) return false;
 		sigmaRay.scaleAdd(0.005, shadowRay.viewDirection, result.p);
 		shadowRay.eyePoint.set(sigmaRay);
-		root.intersect(shadowRay, shadowResult);
+		root.intersect(shadowRay, shadowResult, true);
 		return Double.isFinite(shadowResult.t);
 	}    
 }

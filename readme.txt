@@ -37,3 +37,12 @@ maximum positive, to set the intersection to the maximum instead of the minimum.
 from inside a box (which is needed for the difference operation).
 The image "CompositeGeom.png" demonstrates this (where the image I decided to display is that on this page: 
 https://www.wikiwand.com/en/Constructive_solid_geometry)
+
+My final image can be found under "Lemons.png". It is a still life of a bowl of lemons, which was inspired the
+previous tenants of my apartment for some reason leaving such a painting. To make the lemon model, I looked up
+an image of a low poly lemon, put the lemon in Desmos, found the coordinates of the vertices along one line, and
+then rotated this line across an axis (using Matlab). This has all the goodies I implemented-- the bowl is an
+elliptic hyperboloid of two sheets intersected with a box (to get only one sheet), then intersected with a nested
+hyperboloid (to make it not-solid). There are soft lights and the plane has a slight reflection. However, since
+I decided to really deck it out, and I didn't make any attempts at optimization, it is incredibly slow. Disabling
+the soft shadows aides tremendously in those regards.

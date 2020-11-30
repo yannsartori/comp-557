@@ -395,6 +395,12 @@ public class Parser {
             render.samples = s.nextInt(); 
 			s.close();
 		}
+		Node disableShadowAttr = dataNode.getAttributes().getNamedItem("disable-shadows");
+		if ( disableShadowAttr != null ) {
+        	Scanner s = new Scanner( disableShadowAttr.getNodeValue());
+            render.disableShadows = s.nextBoolean(); 
+			s.close();
+		}
 		Node jitterAttr = dataNode.getAttributes().getNamedItem("jitter");
 		if ( jitterAttr != null ) {
         	Scanner s = new Scanner( jitterAttr.getNodeValue());

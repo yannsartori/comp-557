@@ -22,5 +22,6 @@ public abstract class Intersectable {
 	 * @param result
 	 */
     public abstract void intersect(Ray ray, IntersectResult result);
+    public abstract void intersect(Ray ray, IntersectResult result, boolean isShadow);
     
 }

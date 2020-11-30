@@ -52,6 +52,10 @@ public class SceneNode extends Intersectable {
     
     @Override
     public void intersect(Ray ray, IntersectResult result) {
+    	intersect(ray, result, false); 
+    }
+    
+    public void intersect(Ray ray, IntersectResult result, boolean isShadow) { 
     	tmpRay.eyePoint.set(ray.eyePoint);
     	tmpRay.viewDirection.set(ray.viewDirection);
     	Minv.transform(tmpRay.eyePoint);
@@ -59,7 +63,7 @@ public class SceneNode extends Intersectable {
     	tmpResult.t = Double.POSITIVE_INFINITY;
     	tmpResult.n.set(0, 0, 1);
         for ( Intersectable s : children ) {
-            s.intersect( tmpRay, tmpResult );
+            s.intersect( tmpRay, tmpResult, isShadow );
         }
         if ( tmpResult.t > 1e-9 && tmpResult.t < result.t ) {
         	result.t = tmpResult.t;

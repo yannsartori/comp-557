@@ -59,6 +59,8 @@ public class Render extends WindowAdapter {
     /** A jitter variable to determine whether we should jitter the pixels*/
     public boolean jitter;
     
+    public boolean disableShadows = false;
+    
     /** Flag to indicate when rendering should stop */
     private boolean done;
     
