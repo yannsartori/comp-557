@@ -1,3 +1,4 @@
+// Yann Sartori 260822776
 package comp557.a4;
 
 import java.awt.Color;
@@ -72,10 +73,10 @@ public class Scene {
         		offset[i*xDivisions + j][1] = -0.5 + step*(j + 0.5) + jitter * step * (Math.random() - 0.5);
         	}
         }
-//        for ( int j = 0; j < h && !render.isDone(); j++ ) {
-//            for ( int i = 0; i < w && !render.isDone(); i++ ) {
-        for ( int j = h - 1; j >= 0 && !render.isDone(); j-- ) {
-            for ( int i = w - 1; i >= 0 && !render.isDone(); i-- ) {
+        for ( int j = 0; j < h && !render.isDone(); j++ ) {
+            for ( int i = 0; i < w && !render.isDone(); i++ ) {
+//        for ( int j = h - 1; j >= 0 && !render.isDone(); j-- ) {
+//            for ( int i = w - 1; i >= 0 && !render.isDone(); i-- ) {
             	total.set(0, 0, 0, 0);
             	for ( int sample = 0; sample < offset.length; sample++ ) {
 	                // TODO: Objective 1: generate a ray (use the generateRay method)
@@ -304,10 +305,14 @@ public class Scene {
 	public static boolean inShadow(final IntersectResult result, final Light light, final Intersectable root, IntersectResult shadowResult, Ray shadowRay) {
 		
 		// TODO: Objective 5: check for shdows and use it in your lighting computation
-//		if ( true) return false;
+		//if ( true) return false;
 		sigmaRay.scaleAdd(0.005, shadowRay.viewDirection, result.p);
 		shadowRay.eyePoint.set(sigmaRay);
 		root.intersect(shadowRay, shadowResult, true);
-		return Double.isFinite(shadowResult.t);
+		double lightInt;
+		if ( shadowRay.viewDirection.x > 1e-9 ) lightInt = (light.from.x - shadowRay.eyePoint.x) / shadowRay.viewDirection.x;
+		else if ( shadowRay.viewDirection.y > 1e-9 ) lightInt = (light.from.y - shadowRay.eyePoint.y) / shadowRay.viewDirection.y;
+		else lightInt = (light.from.z - shadowRay.eyePoint.z) / shadowRay.viewDirection.z;
+		return Double.isFinite(shadowResult.t) && shadowResult.t < lightInt;
 	}    
 }

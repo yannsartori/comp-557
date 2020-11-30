@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<scene ambient="0.1 0.1 0.1 1.0">
+  <!-- define camera,material,lights here -->
+  <light name="myLight" color="1 1 1" from="-5 5 5" power="0.5" type="point" />
+  <light name="myLight2" color="1 1 1" from="5 10 5 " power="0.9" type="point" />
+
+  <material name="red" diffuse="1 0 0" specular="0.8 0.8 0.8" hardness="32" />
+  <material name="green" diffuse="0 1 0" specular="0.8 0.8 0.8" hardness="32" />
+  <material name="blue" diffuse="0 0 1" specular="0.8 0.8 0.9" hardness="32" />
+  <material name="orange" diffuse="1 0.5 0" specular="0.8 0.8 0.9" hardness="32" />
+  <material name="yellow" diffuse="1 1 0" specular="0.8 0.8 0.9" hardness="32" />
+  
+  <!-- render configuration -->
+  <render bgcolor="0 0 0" output="BoxStacks.png" samples="1" >
+      <camera name="myCamera" from="6 10 15" to="0 0 0" up="0 1 0" fovy="45" width="512" height="512" />
+  </render> 
+  
+  <!-- scene objects -->
+  <node name="root" >
+    <mesh name="triangle" filename="a4data/triangle.obj" >
+      <material ref="red" />
+    </mesh>
+  </node>
+  <node name="plane" translation="0 -1 0">
+  	<plane>
+      <material ref="blue" />
+      <material2 ref="green" />
+    </plane>
+  </node>    
+ 
+</scene>
+  
